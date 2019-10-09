@@ -6,10 +6,10 @@ using namespace std;
 class LamportClock
 {
 private:
-  vector <int> events; //Max is 25
-  vector<int> logicalCount; //results logical count matrix
-  string **inputMatrix; //input matrix
-  int **logicalClock; // matrix that has the clock values for each
+  //vector <int> events; //Max is 25
+  //vector<int> logicalCount; //results logical count matrix
+  string inputMatrix[5][25]; //input matrix
+  int logicalClock[5][25]; // matrix that has the clock values for each
   int numOfProcess; //This is the N value(rows)
   int numOfEvents; // M value shows the max number(columns)
 
@@ -27,9 +27,9 @@ public:
         cin >> numOfProcess;
         cout << "What is the number of events per process? M = ";
         cin >> numOfEvents;
-        inputMatrix = new string*[numOfProcess];
+      //  inputMatrix = new string*[numOfProcess];
         for(int i = 0; i < numOfProcess; i++)
-            inputMatrix[i] = new string[numOfEvents];
+            //inputMatrix[i] = new string[numOfEvents];
 
             while(!ifile.eof())
             {
@@ -44,14 +44,15 @@ public:
   }
 
   void display();
-  int** logicalClockAnalyzer(); // Function to get logical clock values for event
+  void logicalClockAnalyzer(); // Function to get logical clock values for event
 
 };
 
-  //Display function
+  //Display function to show the table that was inputed to text file
 void LamportClock::display()
   {
-
+    cout << endl;
+    cout << "Table inputed to intput.txt"<< endl;
     for(int i = 0; i < numOfProcess; i++)
     {
       for (int j = 0; j < numOfEvents; j ++)
@@ -62,21 +63,33 @@ void LamportClock::display()
 
   }
 
-int** LamportClock::logicalClockAnalyzer()
+void LamportClock::logicalClockAnalyzer()
 {
+  cout << endl;
+  cout << "Logical Clock Matrix" << endl;
   for(int row = 0; row < numOfProcess; row++)
   {
     for(int col = 0; col < numOfEvents; col++)
     {
-        if(inputMatrix[row][0].at(0) != 'r' && col == 0)
+
+        if(inputMatrix[row][col] == "NULL")
+        logicalClock[row][col] = 0;
+        else if(inputMatrix[row][col].at(0) != 'r' && col == 0)
         logicalClock[row][col] = 1;
         else if(inputMatrix[row][col].at(0) != 'r')
         logicalClock[row][col] = logicalClock[row][col-1] + 1;
-
+        else
+        logicalClock[row][col] = -1;
 
     }
-
   }
-  return logicalClock;
+
+  //Loop to print out the logical clock matrix
+  for(int i = 0; i < numOfProcess; i++)
+  {
+      for(int j = 0; j < numOfEvents; j++)
+      cout << logicalClock[i][j] << " ";
+      cout << endl;
+  }
 
 }

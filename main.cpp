@@ -8,7 +8,7 @@ int main()
 
     LamportClock clockAnalysis("input.txt");
     clockAnalysis.display();
-
+    clockAnalysis.logicalClockAnalyzer();
 
   return 0;
 }
