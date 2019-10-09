@@ -14,39 +14,36 @@ private:
   int numOfEvents; // M value shows the max number(columns)
 
 public:
-  //Constructor to read in the file
-  LamportClock(string filename)
-  {
-
-      fstream ifile(filename, ios::in);
-      if(!ifile.is_open())
-        cout << "ERROR: Could not open file." << endl;
-      else
-      {
-        cout << "What is the value of processes? N = ";
-        cin >> numOfProcess;
-        cout << "What is the number of events per process? M = ";
-        cin >> numOfEvents;
-      //  inputMatrix = new string*[numOfProcess];
-        for(int i = 0; i < numOfProcess; i++)
-            //inputMatrix[i] = new string[numOfEvents];
-
-            while(!ifile.eof())
-            {
-              for(int i = 0; i < numOfProcess; i++)
-              {
-                  for (int j = 0; j < numOfEvents; j ++)
-                  ifile >> inputMatrix[i][j];
-              }
-
-            }
-      }
-  }
-
+  LamportClock(string); //Constructor to read in the file
   void display();
   void logicalClockAnalyzer(); // Function to get logical clock values for event
 
 };
+
+LamportClock::LamportClock(string filename)
+{
+  fstream ifile(filename, ios::in);
+  if(!ifile.is_open())
+    cout << "ERROR: Could not open file." << endl;
+  else
+  {
+    cout << "What is the value of processes? N = ";
+    cin >> numOfProcess;
+    cout << "What is the number of events per process? M = ";
+    cin >> numOfEvents;
+
+        while(!ifile.eof())
+        {
+          for(int i = 0; i < numOfProcess; i++)
+          {
+              for (int j = 0; j < numOfEvents; j ++)
+              ifile >> inputMatrix[i][j];
+          }
+
+        }
+  }
+
+}
 
   //Display function to show the table that was inputed to text file
 void LamportClock::display()
