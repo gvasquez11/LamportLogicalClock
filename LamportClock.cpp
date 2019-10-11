@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <locale>
 using namespace std;
 
 class LamportClock
@@ -20,7 +21,7 @@ public:
   LamportClock(string); //Constructor to read in the file
   void display();
   void logicalClockAnalyzer(); // Function to get logical clock values for event
-  int clockLoop(int);
+  void clockLoop(int);
 
 };
 
@@ -72,9 +73,8 @@ void LamportClock::display()
 
 void LamportClock::logicalClockAnalyzer()
 {
+  int loopDuration = 0;
 
-  cout << endl;
-  cout << "Logical Clock Matrix" << endl;
   for(int row = 0; row < numOfProcess; row++)
   {
     for(int col = 0; col < numOfEvents; col++)
@@ -90,30 +90,33 @@ void LamportClock::logicalClockAnalyzer()
           {
             sendNum = inputMatrix[row][col].at(1) - '0';
             logicalClock[row][col] = logicalClock[row][col-1] + 1;
-            sendEvents[sendNum-1] = logicalClock[row][col];
+            sendEvents[sendNum] = logicalClock[row][col];
           }
+          if((inputMatrix[row][col - 1].at(0) == 'r' && eventFlag[row] <= 0) || inputMatrix[row][col-1].at(0) != 'r')
           logicalClock[row][col] = logicalClock[row][col-1] + 1;
         }
         else if(inputMatrix[row][col].at(0) == 'r')
         {
 
           int tempRec = inputMatrix[row][col].at(1) - '0';
-          int tempClockVal = clockLoop(tempRec);
-              if(sendEvents[tempRec] != -1) //if it doesn't equal -1 that means theres a value in the send array
-                logicalClock[row][col] = sendEvents[tempRec-1]+1;
+              if(sendEvents[tempRec] > 0) //if i's greater than 0 that means theres a value in the send array
+                logicalClock[row][col] = sendEvents[tempRec]+1;
+              else
+              {
+                  eventFlag[row] = col;
+                  loopDuration++;
+              }
         }
         else
-        logicalClock[row][col] = -1;
+        {
+          logicalClock[row][col] = -1;
+        }
+
     }
 
   }
-  //recValue = inputMatrix[0][2].at(1) - '0';
-  //cout << "Testing recValue " << recValue << endl;
-
-  //Testing send event array
-  for (int i = 0; i < 10; i++)
-    cout << "Send event " << i + 1 << " is: " << sendEvents[i] << endl;
-
+  clockLoop(loopDuration);
+cout << "Logical Clock Matrix" << endl;
   //Loop to print out the logical clock matrix
   for(int i = 0; i < numOfProcess; i++)
   {
@@ -124,7 +127,53 @@ void LamportClock::logicalClockAnalyzer()
 
 }
 
-int LamportClock::clockLoop(int r)
+void LamportClock::clockLoop(int lNum)
 {
-  return -7;
+
+cout << endl;
+for(int g = 0; g < lNum; g++)
+{
+  for(int i = 0; i < numOfProcess; i++)
+  {
+    for(int j = eventFlag[i]; j <= eventFlag[i]; j++)
+    {
+      if(inputMatrix[i][j].at(0) == 'r')
+      {
+      int tempRec = inputMatrix[i][j].at(1) - '0';
+          if(sendEvents[tempRec] > 0) //if i's greater than 0 that means theres a value in the send array
+            logicalClock[i][j] = sendEvents[tempRec]+1;
+      }
+
+    }
+    //cout << endl;
+  }
+
+
+  for(int i = 0; i < numOfProcess; i++)
+  {
+    for(int j = eventFlag[i]; j < numOfEvents; j++)
+    {
+      if(inputMatrix[i][j] == "NULL")
+      logicalClock[i][j] = 0;
+      else if(inputMatrix[i][j].at(0) != 'r')
+      {
+
+         if(inputMatrix[i][j].at(0) == 's' && inputMatrix[i][j-1].at(0) == 'r')
+          {
+            if(sendEvents[inputMatrix[i][j-1].at(1) - '0'] >= 0)
+            {
+              sendNum = inputMatrix[i][j].at(1) - '0';
+              logicalClock[i][j] = logicalClock[i][j-1] + 1;
+              sendEvents[sendNum] = logicalClock[i][j];
+              eventFlag[i] -= 1;
+            }
+          }
+          logicalClock[i][j] = logicalClock[i][j-1] + 1;
+      }
+    }
+
+  }
+
+ }
+
 }
