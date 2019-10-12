@@ -94,6 +94,8 @@ void LamportClock::logicalClockAnalyzer()
           }
           if((inputMatrix[row][col - 1].at(0) == 'r' && eventFlag[row] <= 0) || inputMatrix[row][col-1].at(0) != 'r')
           logicalClock[row][col] = logicalClock[row][col-1] + 1;
+
+
         }
         else if(inputMatrix[row][col].at(0) == 'r')
         {
@@ -130,9 +132,13 @@ cout << "Logical Clock Matrix" << endl;
 void LamportClock::clockLoop(int lNum)
 {
 
+
+
 cout << endl;
 for(int g = 0; g < lNum; g++)
 {
+
+  //checks the Recieve values
   for(int i = 0; i < numOfProcess; i++)
   {
     for(int j = eventFlag[i]; j <= eventFlag[i]; j++)
@@ -155,6 +161,8 @@ for(int g = 0; g < lNum; g++)
     {
       if(inputMatrix[i][j] == "NULL")
       logicalClock[i][j] = 0;
+      else if(inputMatrix[i][j].at(0) != 'r' && j == 0)
+      logicalClock[i][j] = 1;
       else if(inputMatrix[i][j].at(0) != 'r')
       {
 
