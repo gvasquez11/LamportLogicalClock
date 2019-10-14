@@ -16,6 +16,7 @@ private:
   int sendNum;
   int recValue; //The number order of the recieve message i.e. r1 r2 r3
   int sendCounter;
+  int rCount;
 
 public:
   LamportClock(string); //Constructor to read in the file
@@ -47,12 +48,16 @@ LamportClock::LamportClock(string filename)
 
         }
   }
+
+
   //Initalize logical clock all to -1
-  for(int i = 0; i < numOfProcess; i++)
+ for(int i = 0; i < numOfProcess; i++)
   {
     for(int j = 0; j < numOfEvents; j++)
       logicalClock[i][j] = -1;
   }
+
+
 
 }
 
@@ -95,14 +100,14 @@ void LamportClock::logicalClockAnalyzer()
           if((inputMatrix[row][col - 1].at(0) == 'r' && eventFlag[row] <= 0) || inputMatrix[row][col-1].at(0) != 'r')
           logicalClock[row][col] = logicalClock[row][col-1] + 1;
 
-
         }
         else if(inputMatrix[row][col].at(0) == 'r')
         {
-
-          int tempRec = inputMatrix[row][col].at(1) - '0';
-              if(sendEvents[tempRec] > 0) //if i's greater than 0 that means theres a value in the send array
+            rCount++;
+            int tempRec = inputMatrix[row][col].at(1) - '0';
+                if(sendEvents[tempRec] > 0) //if i's greater than 0 that means theres a value in the send array
                 logicalClock[row][col] = sendEvents[tempRec]+1;
+
               else
               {
                   eventFlag[row] = col;
@@ -118,6 +123,19 @@ void LamportClock::logicalClockAnalyzer()
 
   }
   clockLoop(loopDuration);
+
+cout << "DEBUGGING-----" << endl;
+for(int i = 0; i < 5; i++)
+cout << sendEvents[i] << " ";
+cout << endl;
+
+for(int i = 0; i < 5; i++)
+cout << eventFlag[i] << " ";
+cout << endl;
+cout << loopDuration << endl;
+cout << rCount << endl;
+
+
 cout << "Logical Clock Matrix" << endl;
   //Loop to print out the logical clock matrix
   for(int i = 0; i < numOfProcess; i++)
@@ -131,56 +149,56 @@ cout << "Logical Clock Matrix" << endl;
 
 void LamportClock::clockLoop(int lNum)
 {
-
-
-
 cout << endl;
 for(int g = 0; g < lNum; g++)
-{
+  {
+
+    for(int i = 0; i < numOfProcess; i++)
+    {
+      for(int j = eventFlag[i]; j < numOfEvents; j++)
+      {
+        if(inputMatrix[i][j] == "NULL")
+        logicalClock[i][j] = 0;
+        else if(inputMatrix[i][j].at(0) != 'r' && j == 0)
+        logicalClock[i][j] = 1;
+        else if(inputMatrix[i][j].at(0) != 'r')
+        {
+
+          if(inputMatrix[i][j].at(0) == 's' && inputMatrix[i][j-1].at(0) == 'r')
+            {
+              if(sendEvents[inputMatrix[i][j-1].at(1) - '0'] >= 0)
+              {
+                sendNum = inputMatrix[i][j].at(1) - '0';
+                logicalClock[i][j] = logicalClock[i][j-1] + 1;
+                sendEvents[sendNum] = logicalClock[i][j];
+                //eventFlag[i] -= 1;
+              }
+            }
+          logicalClock[i][j] = logicalClock[i][j-1] + 1;
+      }
+    }
+  }
 
   //checks the Recieve values
   for(int i = 0; i < numOfProcess; i++)
   {
-    for(int j = eventFlag[i]; j <= eventFlag[i]; j++)
+    for(int j = eventFlag[i]; j < rCount; j++)
     {
-      if(inputMatrix[i][j].at(0) == 'r')
-      {
-      int tempRec = inputMatrix[i][j].at(1) - '0';
-          if(sendEvents[tempRec] > 0) //if i's greater than 0 that means theres a value in the send array
-            logicalClock[i][j] = sendEvents[tempRec]+1;
-      }
-
-    }
-    //cout << endl;
-  }
-
-
-  for(int i = 0; i < numOfProcess; i++)
-  {
-    for(int j = eventFlag[i]; j < numOfEvents; j++)
-    {
-      if(inputMatrix[i][j] == "NULL")
-      logicalClock[i][j] = 0;
-      else if(inputMatrix[i][j].at(0) != 'r' && j == 0)
-      logicalClock[i][j] = 1;
-      else if(inputMatrix[i][j].at(0) != 'r')
-      {
-
-         if(inputMatrix[i][j].at(0) == 's' && inputMatrix[i][j-1].at(0) == 'r')
+          if(inputMatrix[i][j].at(0) == 'r')
           {
-            if(sendEvents[inputMatrix[i][j-1].at(1) - '0'] >= 0)
-            {
-              sendNum = inputMatrix[i][j].at(1) - '0';
-              logicalClock[i][j] = logicalClock[i][j-1] + 1;
-              sendEvents[sendNum] = logicalClock[i][j];
-              eventFlag[i] -= 1;
-            }
+
+            int tempRec = inputMatrix[i][j].at(1) - '0';
+              if(sendEvents[tempRec] > 0)
+               logicalClock[i][j] = sendEvents[tempRec]+1;
           }
-          logicalClock[i][j] = logicalClock[i][j-1] + 1;
-      }
+          if(inputMatrix[i][j].at(0) == 'r' && (inputMatrix[i][j+1].at(0) != 's' || inputMatrix[i][j+1] != "NULL"))
+            logicalClock[i][j+1] = logicalClock[i][j] + 1;
+
     }
 
   }
+
+
 
  }
 

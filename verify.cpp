@@ -17,9 +17,6 @@ private:
                       //Index will indicate process and value will represent event(column)
   char randChar;
   int loopCount;
-  void checkType(); // Function to determine if event is send ot recieve
-  void popSend(); //Function to populate the send events
-  void  popInternalEvents();
 
 
 public:
@@ -27,6 +24,8 @@ public:
   void displayInputClock();
   void verifyAnalyzer();
   void popRec(); //Function to populate the recieve events
+  void popSend(); //Function to populate the send events
+  void  popInternalEvents();
 };
 
 Verify::Verify(string filename)
