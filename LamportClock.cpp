@@ -124,18 +124,6 @@ void LamportClock::logicalClockAnalyzer()
   }
   clockLoop(loopDuration);
 
-cout << "DEBUGGING-----" << endl;
-for(int i = 0; i < 5; i++)
-cout << sendEvents[i] << " ";
-cout << endl;
-
-for(int i = 0; i < 5; i++)
-cout << eventFlag[i] << " ";
-cout << endl;
-cout << loopDuration << endl;
-cout << rCount << endl;
-
-
 cout << "Logical Clock Matrix" << endl;
   //Loop to print out the logical clock matrix
   for(int i = 0; i < numOfProcess; i++)

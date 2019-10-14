@@ -13,8 +13,8 @@ int main()
     clockAnalysis.logicalClockAnalyzer();
     cout << endl;
     cout << "--------------------Algorithm Verify--------------------" << endl;
-  //  Verify v1("verify.txt");
-    //v1.displayInputClock();
-    //v1.verifyAnalyzer();
+      Verify v1("verify.txt");
+      v1.displayInputClock();
+      v1.verifyAnalyzer();
   return 0;
 }

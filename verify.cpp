@@ -15,6 +15,7 @@ private:
   int recValues[25];
   int recLocation[25]; // This will keep track where a register was found
                       //Index will indicate process and value will represent event(column)
+  string usedSend[9];
   char randChar;
   int loopCount;
 
@@ -25,7 +26,7 @@ public:
   void verifyAnalyzer();
   void popRec(); //Function to populate the recieve events
   void popSend(); //Function to populate the send events
-  void  popInternalEvents();
+  void  popInternalEvents(); //Function to populate the internal events 
 };
 
 Verify::Verify(string filename)
@@ -49,6 +50,7 @@ Verify::Verify(string filename)
       }
     }
   }
+
 }
 
 void Verify::displayInputClock()
@@ -68,6 +70,22 @@ void Verify::verifyAnalyzer()
 {
   int num = noProcess;
   srand(time(0));
+  bool valid = true;
+
+  for(int i = 0; i < noProcess; i++)
+  {
+    for(int j = 0; j < noEvents; j++)
+    {
+      int find = fileClock[i][j] - 1;
+       if(fileClock[i][0] > 1 && (fileClock[i][j+1] - fileClock[i][j]) > 1 )
+        {
+          valid = false;
+          //cout << "ERROR: The Logical Values inputed has a process with an incorrect execution!" << endl;
+          break;
+        }
+    }
+  }
+
     for(int i = 0; i < noProcess; i++)
     {
       for(int j = 0; j < noEvents; j++)
@@ -110,15 +128,21 @@ void Verify::verifyAnalyzer()
    popRec();
    popSend();
    popInternalEvents();
-
     //Print out the verify Matrix
-    cout << endl;
-    cout << "Verify Matrix" << endl;
-    for(int i = 0; i < noProcess; i++)
+    if(valid != false)
     {
-      for(int j = 0; j < noEvents; j++)
+      cout << endl;
+      cout << "Verify Matrix" << endl;
+      for(int i = 0; i < noProcess; i++)
+      {
+        for(int j = 0; j < noEvents; j++)
         cout <<  verifyResult[i][j] << " ";
         cout << endl;
+      }
+    }
+    else
+    {
+      cout << "ERROR: The Logical Values inputed has a process with an incorrect execution!" << endl;
     }
 }
 
@@ -139,16 +163,26 @@ void Verify::popSend()
 {
 int num = noProcess;
 string stemp;
+
 for(int i = 0; i < noProcess; i++)
 {
-  for(int j = 0; j < noEvents; j++)
+  for(int j = 0; j < loopCount; j++)
   {
     for(int x = 0; x <= num; x++)
     {
       if(fileClock[i][j] + 1 == recValues[x])
       {
+        if(i == 1 && j == 0)
+        {
+          randChar = 97 + rand() % 16;
+          verifyResult[i][j] = randChar;
+        }
+        else
+        {
         stemp = x + '0';
         verifyResult[i][j] = "s" + stemp;
+        usedSend[i] = verifyResult[i][j];
+        }
 
       }
     }
@@ -173,4 +207,7 @@ void Verify::popInternalEvents()
     }
 
   }
+
+
+
 }
